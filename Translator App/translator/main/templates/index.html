@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>GFG</title>
+    <style>
+        body {
+            background: #f5f7fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        form {
+            background: #fff;
+            padding: 2rem 2.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+            min-width: 320px;
+        }
+        input[type="text"] {
+            padding: 0.7rem 1rem;
+            border: 1px solid #cfd8dc;
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: border 0.2s;
+        }
+        input[type="text"]:focus {
+            border: 1.5px solid #1976d2;
+            outline: none;
+        }
+        select {
+            padding: 0.7rem 1rem;
+            border: 1px solid #cfd8dc;
+            border-radius: 6px;
+            font-size: 1rem;
+            background: #f1f8fe;
+        }
+        button[type="submit"] {
+            background: #1976d2;
+            color: #fff;
+            border: none;
+            padding: 0.8rem 1.2rem;
+            border-radius: 6px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        button[type="submit"]:hover {
+            background: #125ea2;
+        }
+        .translation-result {
+            margin-top: 2rem;
+            background: #e3f2fd;
+            padding: 1.2rem 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+        .translation-result strong {
+            display: block;
+            font-size: 1.2rem;
+            margin-bottom: 0.7rem;
+        }
+        .pronounce-button {
+            background: #43a047;
+            color: #fff;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+<form method="post">
+    {% csrf_token %}
+    <input type="text" name="translate" required>
+    <br>
+    <select required name="language">
+        <option value="Chinese">Chinese</option>
+        <option value="English">English</option>
+        <option value="Spanish">Spanish</option>
+        <option value="French">French</option> 
+        <option value="Hindi">Hindi</option>
+        <option value="Marathi">Marathi</option>
+        <option value="German">German</option>
+    </select>
+    <br>
+    <button type="submit">Translate</button>
+</form>
+{% if translation %}
+    <div class="translation-result">
+        <strong>Translation:</strong>
+        <div style="font-size:1.2rem; margin:0.7rem 0;">{{ translation }}</div>
+        <button onclick="pronounce('{{ translation|escapejs }}','{{ language|default:'English'}}')" class="pronounce-button"> 🔊 Pronounce </button>
+    </div>
+    <script>
+        function pronounce(text, lang) {
+            if ('speechSynthesis' in window) {
+                var utter = new SpeechSynthesisUtterance(text);
+                // Try to map language names to BCP-47 codes for better pronunciation
+                var langMap = {
+                    'Chinese': 'zh-CN',
+                    'English': 'en-US',
+                    'Spanish': 'es-ES',
+                    'French': 'fr-FR',
+                    'Hindi': 'hi-IN',
+                    'Marathi': 'mr-IN',
+                    'German': 'de-DE'
+                };
+                utter.lang = langMap[lang] || 'en-US';
+                window.speechSynthesis.speak(utter);
+            } else {
+                alert('Sorry, your browser does not support speech synthesis.');
+            }
+        }
+    </script>
+{% endif %}
+</body>
+</html>
